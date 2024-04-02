@@ -1,17 +1,26 @@
 """Module extending BaseClasses.py for aLttP"""
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from enum import IntEnum
 
 from BaseClasses import Location, Item, ItemClassification, Region, MultiWorld
+
+if TYPE_CHECKING:
+    from .Dungeons import Dungeon
+    from .Regions import LTTPRegion
+
 
 class ALttPLocation(Location):
     game: str = "A Link to the Past"
     crystal: bool
     player_address: Optional[int]
     _hint_text: Optional[str]
+    shop: None
     shop_slot: Optional[int] = None
     """If given as integer, shop_slot is the shop's inventory index."""
     shop_slot_disabled: bool = False
+    shop_price = 0
+    shop_price_type = None
+    parent_region: "LTTPRegion"
 
     def __init__(self, player: int, name: str, address: Optional[int] = None, crystal: bool = False,
                  hint_text: Optional[str] = None, parent=None, player_address: Optional[int] = None):
@@ -19,6 +28,13 @@ class ALttPLocation(Location):
         self.crystal = crystal
         self.player_address = player_address
         self._hint_text = hint_text
+
+    @property
+    def hint_text(self) -> str:
+        hint_text = getattr(self, "_hint_text", None)
+        if hint_text:
+            return hint_text
+        return "at " + self.name.replace("_", " ").replace("-", " ")
 
 
 class ALttPItem(Item):
@@ -85,6 +101,7 @@ class LTTPRegion(Region):
     is_dark_world: bool = False
 
     shop: Optional = None
+    dungeon: Optional["Dungeon"] = None
 
     def __init__(self, name: str, type_: LTTPRegionType, hint: str, player: int, multiworld: MultiWorld):
         super().__init__(name, player, multiworld, hint)

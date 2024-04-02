@@ -1,4 +1,5 @@
 import collections
+import logging
 import typing
 
 from BaseClasses import LocationProgressType, MultiWorld, Location, Region, Entrance
@@ -40,12 +41,12 @@ def locality_rules(world: MultiWorld):
             forbid_data[sender][receiver].update(items)
 
         for receiving_player in world.player_ids:
-            local_items: typing.Set[str] = world.local_items[receiving_player].value
+            local_items: typing.Set[str] = world.worlds[receiving_player].options.local_items.value
             if local_items:
                 for sending_player in world.player_ids:
                     if receiving_player != sending_player:
                         forbid(sending_player, receiving_player, local_items)
-            non_local_items: typing.Set[str] = world.non_local_items[receiving_player].value
+            non_local_items: typing.Set[str] = world.worlds[receiving_player].options.non_local_items.value
             if non_local_items:
                 forbid(receiving_player, receiving_player, non_local_items)
 
@@ -81,15 +82,18 @@ def locality_rules(world: MultiWorld):
                     i.name not in sending_blockers[i.player] and old_rule(i)
 
 
-def exclusion_rules(world: MultiWorld, player: int, exclude_locations: typing.Set[str]) -> None:
+def exclusion_rules(multiworld: MultiWorld, player: int, exclude_locations: typing.Set[str]) -> None:
     for loc_name in exclude_locations:
         try:
-            location = world.get_location(loc_name, player)
+            location = multiworld.get_location(loc_name, player)
         except KeyError as e:  # failed to find the given location. Check if it's a legitimate location
-            if loc_name not in world.worlds[player].location_name_to_id:
+            if loc_name not in multiworld.worlds[player].location_name_to_id:
                 raise Exception(f"Unable to exclude location {loc_name} in player {player}'s world.") from e
         else:
-            location.progress_type = LocationProgressType.EXCLUDED
+            if not location.event:
+                location.progress_type = LocationProgressType.EXCLUDED
+            else:
+                logging.warning(f"Unable to exclude location {loc_name} in player {player}'s world.")
 
 
 def set_rule(spot: typing.Union["BaseClasses.Location", "BaseClasses.Entrance"], rule: CollectionRule):
@@ -140,10 +144,18 @@ def add_item_rule(location: "BaseClasses.Location", rule: ItemRule, combine: str
             location.item_rule = lambda item: rule(item) or old_rule(item)
 
 
-def item_in_locations(state: "BaseClasses.CollectionState", item: str, player: int,
-                      locations: typing.Sequence["BaseClasses.Location"]) -> bool:
-    for location in locations:
+def item_name_in_location_names(state: "BaseClasses.CollectionState", item: str, player: int,
+                                location_name_player_pairs: typing.Sequence[typing.Tuple[str, int]]) -> bool:
+    for location in location_name_player_pairs:
         if location_item_name(state, location[0], location[1]) == (item, player):
+            return True
+    return False
+
+
+def item_name_in_locations(item: str, player: int,
+                           locations: typing.Sequence["BaseClasses.Location"]) -> bool:
+    for location in locations:
+        if location.item and location.item.name == item and location.item.player == player:
             return True
     return False
 

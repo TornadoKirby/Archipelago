@@ -115,11 +115,12 @@ class AdventureContext(CommonContext):
             msg = f"Received {', '.join([self.item_names[item.item] for item in args['items']])}"
             self._set_message(msg, SYSTEM_MESSAGE_ID)
         elif cmd == "Retrieved":
-            self.freeincarnates_used = args["keys"][f"adventure_{self.auth}_freeincarnates_used"]
-            if self.freeincarnates_used is None:
-                self.freeincarnates_used = 0
-            self.freeincarnates_used += self.freeincarnate_pending
-            self.send_pending_freeincarnates()
+            if f"adventure_{self.auth}_freeincarnates_used" in args["keys"]:
+                self.freeincarnates_used = args["keys"][f"adventure_{self.auth}_freeincarnates_used"]
+                if self.freeincarnates_used is None:
+                    self.freeincarnates_used = 0
+                self.freeincarnates_used += self.freeincarnate_pending
+                self.send_pending_freeincarnates()
         elif cmd == "SetReply":
             if args["key"] == f"adventure_{self.auth}_freeincarnates_used":
                 self.freeincarnates_used = args["value"]
@@ -396,7 +397,7 @@ async def atari_sync_task(ctx: AdventureContext):
                     ctx.atari_streams = await asyncio.wait_for(
                         asyncio.open_connection("localhost",
                                                 port),
-                                                timeout=10)
+                        timeout=10)
                     ctx.atari_status = CONNECTION_TENTATIVE_STATUS
                 except TimeoutError:
                     logger.debug("Connection Timed Out, Trying Again")

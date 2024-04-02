@@ -29,16 +29,31 @@ you can now enable the *Archipelago* mod (it should have an `[x]` next to it).
 ### Configure Archipelago Mod
 
 In the Options menu, select Mod Settings. Under the Archipelago drop down, you will see the options for *Server*,
-*Port*, and *Slot*, where you can fill in the relevant information.
+*Port*, *Slot*, and *Password* where you can fill in the relevant information.
 
-Once you start a new run in Noita, you should see "Connected to Archipelago server" in the bottom left of the screen. If
-you do not see this message, ensure that the mod is enabled and installed per the instructions above.
+Once you start a new run in Noita, you should see an Archipelago logo in the bottom right corner of the screen with a 
+checkmark on it. If you do not see this icon, ensure that the mod is enabled and installed per the instructions above, 
+or try restarting your game.
 
 ## Configuring your YAML File
+
 ### What is a YAML and why do I need one?
 You can see the [basic multiworld setup guide](/tutorial/Archipelago/setup/en) here on the Archipelago website to learn
 about why Archipelago uses YAML files and what they're for.
+Please note that Noita only allows you to type certain characters for your slot name.
+These characters are: `` !#$%&'()+,-.0123456789;=@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{}~<>|\/``
 
 ### Where do I get a YAML?
-You can use the [game settings page for Noita](/games/Noita/player-settings) here on the Archipelago website to
+You can use the [game options page for Noita](/games/Noita/player-options) here on the Archipelago website to
 generate a YAML using a graphical interface.
+
+## Poptracker Pack
+
+You may optionally use the [Noita Poptracker pack](https://github.com/ScipioWright/Noita-poptracker/releases/latest).
+
+To use it, download the pack as well as [PopTracker](https://github.com/black-sliver/PopTracker/releases) itself.
+Place the unzipped pack in the `packs` folder. Then, open Poptracker and open the pack.
+Click on the "AP" symbol at the top, then enter the desired address, slot name, and password.
+
+That's all you need for it. It will provide you with a quick reference to see which checks you've done and
+which checks you still have left.
