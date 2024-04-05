@@ -1,7 +1,8 @@
 from __future__ import annotations
+from dataclasses import dataclass
 import typing
 
-from Options import Choice, Option, Toggle
+from Options import Choice, Option, Toggle, PerGameCommonOptions
 
 class MaxSciencePack(Choice):
     """Maximum level of science pack required to complete the game."""
@@ -45,9 +46,15 @@ class RandomTechIngredients(Toggle):
     """Random Tech Ingredients"""
     display_name = "Random Tech Ingredients"
 
-dsp_options: typing.Dict[str, type(Option)] = {
-    "max_science_pack": MaxSciencePack,
-    "tech_tree_layout": TechTreeLayout,
-    "random_tech_ingredients": RandomTechIngredients
-    
-}
+# dsp_options: typing.Dict[str, type(Option)] = {
+#    "max_science_pack": MaxSciencePack,
+#    "tech_tree_layout": TechTreeLayout,
+#    "random_tech_ingredients": RandomTechIngredients
+#
+# }
+
+@dataclass
+class DSPOptions(PerGameCommonOptions):
+    max_science_pack: MaxSciencePack
+    tech_tree_layout: TechTreeLayout
+    random_tech_ingredients: RandomTechIngredients

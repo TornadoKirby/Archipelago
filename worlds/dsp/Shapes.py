@@ -1,17 +1,18 @@
 from typing import Dict, List, Set
 
-from BaseClasses import MultiWorld
+from worlds.AutoWorld import World
 from .Options import TechTreeLayout
 
-def get_shapes(dsp_world) -> Dict[str, List[str]]:
-    world = dsp_world.world
+def get_shapes(dsp_world: World) -> Dict[str, List[str]]:
+    world = dsp_world.multiworld
     player = dsp_world.player
+    options = dsp_world.options
     prerequisites: Dict[str, Set[str]] = {}
-    layout = world.tech_tree_layout[player].value
+    layout = options.tech_tree_layout.value
     custom_technologies = dsp_world.custom_technologies
     if layout == TechTreeLayout.option_small_diamonds:
         slice_size = 4
-        tech_names: List[str] = list(set(custom_technologies))# - world._static_nodes)
+        tech_names: List[str] = list(set(custom_technologies)) # - world._static_nodes)
         tech_names.sort()
         world.random.shuffle(tech_names)
         while len(tech_names) > slice_size:
@@ -27,7 +28,7 @@ def get_shapes(dsp_world) -> Dict[str, List[str]]:
             prerequisites[diamond_2] = prerequisites[diamond_1] = {diamond_0}
     elif layout == TechTreeLayout.option_medium_diamonds:
         slice_size = 9
-        tech_names: List[str] = list(set(custom_technologies))# - world._static_nodes)
+        tech_names: List[str] = list(set(custom_technologies)) # - world._static_nodes)
         tech_names.sort()
         world.random.shuffle(tech_names)
         while len(tech_names) > slice_size:
@@ -92,5 +93,5 @@ def get_shapes(dsp_world) -> Dict[str, List[str]]:
             previous_slice = slice
             slice_size -= 1
 
-    world.tech_tree_layout_prerequisites[player] = prerequisites
+    world.tech_tree_layout_prerequisites = prerequisites
     return prerequisites
