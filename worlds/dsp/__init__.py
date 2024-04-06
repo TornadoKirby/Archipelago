@@ -158,42 +158,45 @@ class DSPWorld(World):
         # self.multiworld.completion_condition[self.player] = lambda state: state.has('Mission completed!', self.player)
 
     def generate_output(self, output_directory: str):
+
+        # for the string keys of the JSON data that goes to the
+        # client, we'll use PascalCase since C# uses that for
+        # all public fields and the JSON data directly maps to
+        # C# classes on the client side.
+
         base_info = {
-            "version": Utils.__version__,
-            "title": "Archipelago",
-            "author": "Lordlou, tornadokirby",
-            "homepage": "https://archipelago.gg",
-            "description": "Integration client for the Archipelago Randomizer",
-            "dsp_version": "0.9.26.13026"
+            "Version": Utils.__version__,
+            "Title": "Archipelago",
+            "Author": "Lordlou, tornadokirby",
+            "Homepage": "https://archipelago.gg",
+            "Description": "Integration client for the Archipelago Randomizer",
+            "DSPVersion": "0.9.26.13026"
         }
 
-
-
-        player_names = {x: self.multiworld.get_player_name(x) for x in self.multiworld.player_ids}
         locations = []
         for location in self.multiworld.get_filled_locations(self.player):
             locations.append({
-                "location": location.name,
-                "locationID": technology_table[location.name].dsp_id,
-                "locationDSPTech": ap_to_dsp_tech(technology_table[location.name].ap_id), # locationDSPTech
-                "item": location.item.name,
-                "playerId": location.item.player
+                "Location": location.name,
+                "LocationID": technology_table[location.name].dsp_id,
+                "LocationDSPTech": ap_to_dsp_tech(technology_table[location.name].ap_id), # locationDSPTech
+                "Item": location.item.name,
+                "PlayerID": location.item.player
             })
         mod_name = f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_player_name(self.player)}"
 
-        data = {"locations": locations,
-                "player_names": player_names,
-                "tech_table": tech_table,
-                "mod_name": mod_name,
-                "allowed_science_packs": list(self.options.max_science_pack.get_allowed_packs()),
-                # "tech_cost_scale": tech_cost, "custom_data": world.custom_data[player],
-                "tech_tree_layout_prerequisites": {
+        data = {"Locations": locations,
+                "PlayerNames": {x: self.multiworld.get_player_name(x) for x in self.multiworld.player_ids},
+                "TechTable": tech_table,
+                "ModName": mod_name,
+                "AllowedSciencePacks": list(self.options.max_science_pack.get_allowed_packs()),
+                # "TechCostScale": tech_cost, "custom_data": world.custom_data[player],
+                "TechTreeLayoutPrerequisites": {
                     ap_to_dsp_tech(technology_table[key].ap_id): [ap_to_dsp_tech(technology_table[v].ap_id) for v in
                                                                   value] for key, value in
                     self.multiworld.tech_tree_layout_prerequisites.items()},
-                # "rocket_recipe" : rocket_recipes[world.max_science_pack[player].value],
-                "slot_name": self.multiworld.get_player_name(self.player),
-                # "starting_items": self.multiworld.starting_items[self.player]
+                # "RocketRecipe" : rocket_recipes[world.max_science_pack[player].value],
+                "SlotName": self.multiworld.get_player_name(self.player),
+                # "StartingItems": self.multiworld.starting_items[self.player]
                 }
         for dsp_option in self.options.as_dict():
             print("{}: {}".format(dsp_option, getattr(self.options, dsp_option)))
@@ -205,7 +208,7 @@ class DSPWorld(World):
             json.dump(data, f, indent=4)
 
         info = base_info.copy()
-        info["name"] = mod_name
+        info["Name"] = mod_name
         with open(os.path.join(mod_dir, "info.json"), "wt") as f:
             json.dump(info, f, indent=4)
 
